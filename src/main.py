@@ -58,7 +58,7 @@ async def on_member_remove(event: events.ChatAction.Event):
             
             name = the_boys.get(removed_user.id, "این")
 
-            if name.endswith("ا"):
+            if not name.endswith("ا"):
                 name += "و"
             else:
                 name += "رو"
