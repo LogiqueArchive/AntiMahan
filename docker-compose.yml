@@ -1,7 +1,7 @@
 version: '1'
 services:
   bot:
-    container_name: 'AutoAdder'
+    container_name: 'AntiMahan'
     build:
       context: .
     stop_signal: SIGINT
