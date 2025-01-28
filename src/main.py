@@ -58,9 +58,15 @@ async def on_member_remove(event: events.ChatAction.Event):
             
             name = the_boys.get(removed_user.id, "این")
 
+            if name.endswith("ا"):
+                name += "و"
+            else:
+                name += "رو"
+
+
             await client.send_message(
                 chat.id,
-                f"باز یه کصکشی {name}و از گروه ریموو کرد"
+                f"باز یه کصکشی {name} از گروه ریموو کرد"
             )
             try:
                 await add_member(chat.id, removed_user.id)
