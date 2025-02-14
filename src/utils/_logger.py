@@ -1,18 +1,21 @@
-from logging import Logger, INFO, Formatter, StreamHandler, FileHandler
+import os
+from logging import INFO, FileHandler, Formatter, Logger, StreamHandler
 from logging.handlers import RotatingFileHandler
 from typing import Optional
-import os
 
 
 class CustomLogger(Logger):
     """Custom logger with console and file output, and formatted messages."""
-    def __init__(self,
-                 name: str,
-                 level: int = INFO,
-                 log_to_file: bool = False,
-                 log_file_path: Optional[str] = None,
-                 max_log_size: int = 10 * 1024 * 1024,  # Default: 10MB
-                 backup_count: int = 5):  # Default: 5 backups
+
+    def __init__(
+        self,
+        name: str,
+        level: int = INFO,
+        log_to_file: bool = False,
+        log_file_path: Optional[str] = None,
+        max_log_size: int = 10 * 1024 * 1024,  # Default: 10MB
+        backup_count: int = 5,
+    ):  # Default: 5 backups
         """
         Initializes a custom logger with configurable handlers.
 
@@ -23,7 +26,7 @@ class CustomLogger(Logger):
         :param max_log_size: Maximum size of the log file before rotation (default: 10MB).
         :param backup_count: Number of backup log files to keep (default: 5).
         """
-  
+
         super().__init__(name, level)
 
         # Formatter for log messages
@@ -40,12 +43,12 @@ class CustomLogger(Logger):
         # File handler setup (if enabled)
         if log_to_file and log_file_path:
             # Ensure the directory exists
-            os.makedirs(os.path.dirname(log_file_path), exist_ok = True)
+            os.makedirs(os.path.dirname(log_file_path), exist_ok=True)
 
             # Use RotatingFileHandler to limit file size and rotate logs
-            file_handler = RotatingFileHandler(log_file_path,
-                                               maxBytes = max_log_size,
-                                               backupCount = backup_count)
+            file_handler = RotatingFileHandler(
+                log_file_path, maxBytes=max_log_size, backupCount=backup_count
+            )
             file_handler.setFormatter(formatter)
 
             self.addHandler(file_handler)
@@ -66,5 +69,7 @@ class CustomLogger(Logger):
         """Logs a message to the file."""
         self.setLevel(level)
         for handler in self.handlers:
-            if isinstance(handler, FileHandler) or isinstance(handler, RotatingFileHandler):
+            if isinstance(handler, FileHandler) or isinstance(
+                handler, RotatingFileHandler
+            ):
                 handler.setLevel(level)
