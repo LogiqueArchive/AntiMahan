@@ -107,6 +107,7 @@ async def toggle_anti_photo(event: events.NewMessage.Event):
     
     if event.sender_id != me.id:
         return
+
     
     if event.reply_to:
         replied_message = await event.get_reply_message()
@@ -147,7 +148,12 @@ async def anti_handler(event: events.NewMessage.Event):
 
 @client.on(events.NewMessage(pattern="/ping"))
 async def ping(event: events.NewMessage.Event):
-    return await event.reply("قرار نیست بگم pong")
+    me = await client.get_me()
+    
+    if event.sender_id != me.id:
+        return
+
+    await event.reply("نه")
 
 @client.on(events.NewMessage(pattern="/sex"))
 async def on_new_message(event: events.NewMessage.Event):
