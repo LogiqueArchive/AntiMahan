@@ -103,13 +103,14 @@ async def toggle_anti_joy(event: events.NewMessage.Event):
 
 @client.on(events.NewMessage(chats=chats))
 async def anti_joy(event: events.NewMessage.Event):
-    if anti_joy_enabled and "😂" in event.text:
-        logger.info("Joy detected!")
-        try:
-            await event.message.delete()
-            logger.info("Joy deleted!")
-        except Exception as err:
-            logger.error("Failed to delete joy: %s", err)
+    if "😂" in event.text:
+        if any((anti_joy_enabled, cache.get(event.sender_id, {}).get("anti_joy", False))):
+            logger.info("Joy detected!")
+            try:
+                await event.message.delete()
+                logger.info("Joy deleted!")
+            except Exception as err:
+                logger.error("Failed to delete joy: %s", err)
 
 
 @client.on(events.NewMessage(pattern="/sex"))
