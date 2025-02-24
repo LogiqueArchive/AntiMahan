@@ -38,6 +38,6 @@ jobs:
         python3 ${{ github.workspace }}/.github/discloud_upload.py
       env:
         API_TOKEN: ${{ secrets.DISCLOUD_TOKEN }}
-        SOURCE_DIR: ${{ github.workspace }}/source
+        SOURCE_PATH: ${{ github.workspace }}/source
         CONFIG_FILE: ${{ github.workspace }}/discloud.config
         LOG_LEVEL: DEBUG
