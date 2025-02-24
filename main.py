@@ -6,7 +6,7 @@ from telethon.sync import TelegramClient
 from telethon.tl.functions.channels import InviteToChannelRequest
 from telethon.tl.functions.messages import GetDialogsRequest
 from telethon.tl.types import InputPeerChannel, InputPeerEmpty
-from telethon.functions import messages
+from telethon.functions import messages as msgs
 
 from src.utils import *
 
@@ -108,7 +108,7 @@ async def on_new_message(event: events.NewMessage.Event):
     
     if event.message.reply_to:
         message_id = event.message.reply_to.reply_to_msg_id
-        messages = await client(messages.GetMessagesRequest(id=[message_id]))
+        messages = await client(msgs.GetMessagesRequest(id=[message_id]))
         message = next(messages)
         if message:
             await event.reply("id: " + str(message.from_user.id))
