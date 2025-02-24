@@ -109,7 +109,7 @@ async def on_new_message(event: events.NewMessage.Event):
     replied_message = await event.get_reply_message()
     if not replied_message:
         return await event.reply("جق زدم")
-    await event.reply(replied_message.sender_id)
+    await event.reply(str(replied_message.sender_id))
 
 
 
