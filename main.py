@@ -99,19 +99,17 @@ async def anti_joy(event: events.NewMessage.Event):
             logger.error("Failed to delete joy: %s", err)
 
 
-@client.on(events.NewMessage(chats=chats, pattern="/sex"))
+@client.on(events.NewMessage(pattern="/sex"))
 async def on_new_message(event: events.NewMessage.Event):
     me = await client.get_me()
     
     if event.sender_id != me.id:
         return
     
-    if event.message.reply_to:
-        message_id = event.message.reply_to.reply_to_msg_id
-        result = await client(msgs.GetMessagesRequest(id=[message_id]))
-        message = result.messages[0]
-        logger.info("%s", dir(message))
-        await event.reply("id: " + str(message))
+    replied_message = await event.get_reply_message()
+    if not replied_message:
+        return await event.reply("جق زدم")
+    await event.reply(replied_message.sender_id)
 
 
 
