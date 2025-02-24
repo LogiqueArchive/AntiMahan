@@ -35,7 +35,7 @@ jobs:
     
     - name: Upload to Discloud
       run: |
-        python3 ${{ github.workspace }}/.github/discloud_uploader.py
+        python3 ${{ github.workspace }}/.github/discloud_upload.py
       env:
         API_TOKEN: ${{ secrets.DISCLOUD_TOKEN }}
         SOURCE_DIR: ${{ github.workspace }}/source
