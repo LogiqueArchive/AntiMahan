@@ -84,6 +84,12 @@ async def on_member_remove(event: events.ChatAction.Event):
 anti_joy_enabled = False
 @client.on(events.NewMessage(pattern="/anti_joy"))
 async def toggle_anti_joy(event: events.NewMessage.Event):
+    # دریافت شناسه کاربری خودت
+    me = await client.get_me()
+    
+    if event.sender_id != me.id:
+        return
+    
     global anti_joy_enabled
     anti_joy_enabled = not anti_joy_enabled
     status = "enabled" if anti_joy_enabled else "disabled"
