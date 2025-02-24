@@ -82,7 +82,7 @@ def generate_zip_archive(source_path: Path, config_path: Path) -> Path:
 
     shutil.make_archive(workdir_name, "zip", workdir_path)
 
-    os.removedirs(workdir_path)
+    shutil.rmtree(workdir_path)
     return Path(f"{workdir_name}.zip")
 
 
