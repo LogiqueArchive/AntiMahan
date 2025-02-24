@@ -155,17 +155,6 @@ async def ping(event: events.NewMessage.Event):
 
     await event.reply("نه")
 
-@client.on(events.NewMessage(pattern="/sex"))
-async def on_new_message(event: events.NewMessage.Event):
-    me = await client.get_me()
-    
-    if event.sender_id != me.id:
-        return
-    
-    replied_message = await event.get_reply_message()
-    if not replied_message:
-        return await event.reply("جق زدم")
-    await event.reply(str(replied_message.sender_id))
 
 
 
