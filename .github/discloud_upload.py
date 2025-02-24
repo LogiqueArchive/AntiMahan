@@ -50,9 +50,9 @@ async def upload_app(
     zipfile_path: Path, app_id: Optional[str]
 ) -> discloud.discloud.Action:
 
-    with open(zipfile_path, "rb") as fp:
-
-        discloud_file: discloud.File = discloud.File(fp=fp)
+    
+    discloud_file: discloud.File = discloud.File(zipfile_path.__fspath__())
+    setattr(discloud_file, "filename", zipfile_path.name)
 
     if app_id is not None:
         return await client.commit(app_id, discloud_file)
