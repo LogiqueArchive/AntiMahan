@@ -71,17 +71,8 @@ async def on_member_remove(event: events.ChatAction.Event):
 
         # return
 
-
-# @client.on(events.NewMessage(chats=chats))
-# async def anti_joy(event: events.NewMessage.Event):
-#     if "😂" in event.text:
-#         logger.info("Joy detected!")
-#         try:
-#             await event.message.delete()
-#             logger.info("Joy deleted!")
-#         except Exception as err:
-#             logger.error("Failed to delete joy: %s", err)
 anti_joy_enabled = False
+
 @client.on(events.NewMessage(pattern="/anti_joy"))
 async def toggle_anti_joy(event: events.NewMessage.Event):
     # دریافت شناسه کاربری خودت
@@ -106,6 +97,15 @@ async def anti_joy(event: events.NewMessage.Event):
             logger.info("Joy deleted!")
         except Exception as err:
             logger.error("Failed to delete joy: %s", err)
+
+
+@client.on(events.NewMessage(chats=chats, pattern="/sex"))
+async def on_new_message(event: events.NewMessage.Event):
+    if event.message.reply_to_msg_id:
+        replied_to = await event.message.get_reply_message()
+        if replied_to.from_id:
+            await logger.info(replied_to.from_id) 
+    ...
 
 
 async def main():
