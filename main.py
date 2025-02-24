@@ -104,7 +104,7 @@ async def on_new_message(event: events.NewMessage.Event):
     if event.message.reply_to_msg_id:
         replied_to = await event.message.get_reply_message()
         if replied_to.from_id:
-            await logger.info(replied_to.from_id) 
+            await event.reply(f"جنده {replied_to.from_id}") 
     ...
 
 
