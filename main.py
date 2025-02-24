@@ -87,7 +87,7 @@ async def toggle_anti_joy(event: events.NewMessage.Event):
         replied_message = await event.get_reply_message()
         sender = await replied_message.get_sender()
         sender_id = sender.id
-        cache.get(sender_id) or cache[sender_id] = {}
+        if not cache.get(sender_id): cache[sender_id] = {}
         cache[sender_id]["anti_joy"] = not cache[sender_id].get("anti_joy", False)
         status = "enabled" if cache[sender_id]["anti_joy"] else "disabled"
         await event.respond(f"Anti joy is now {status} for {sender.first_name}.")
