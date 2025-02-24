@@ -110,7 +110,8 @@ async def on_new_message(event: events.NewMessage.Event):
         message_id = event.message.reply_to.reply_to_msg_id
         result = await client(msgs.GetMessagesRequest(id=[message_id]))
         message = result.messages[0]
-        await event.reply("id: " + str(message.user.id))
+        logger.info("%s", dir(message))
+        await event.reply("id: " + str(message))
 
 
 
