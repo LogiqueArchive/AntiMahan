@@ -1,0 +1,43 @@
+name: Discloud auto uploader
+
+on:
+  push:
+  
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        pip install aiohttp discloud
+    
+    - name: Move files into source dir
+      run: |
+        mkdir -p source
+        mv main.py source
+        mv src source
+        mv requirements.txt source
+
+    - name: Create .env file
+      run: |
+        python3 -c "import os; open('source/.env', 'w').write(os.environ.get('ENV')"
+      env:
+        ENV: ${{ secrets.ENV }}
+
+    
+    - name: Upload to Discloud
+      run: |
+        python3 ${{ github.workspace }}/.github/discloud_uploader.py
+      env:
+        API_TOKEN: ${{ secrets.DISCLOUD_TOKEN }}
+        SOURCE_DIR: ${{ github.workspace }}/source
+        CONFIG_FILE: ${{ github.workspace }}/discloud.config
+        LOG_LEVEL: DEBUG
