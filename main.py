@@ -145,6 +145,10 @@ async def anti_handler(event: events.NewMessage.Event):
             except Exception as err:
                 logger.error("Failed to delete photo: %s", err)
 
+@client.on(events.NewMessage(pattern="/ping"))
+async def ping(event: events.NewMessage.Event):
+    return await event.reply("قرار نیست بگم pong")
+
 @client.on(events.NewMessage(pattern="/sex"))
 async def on_new_message(event: events.NewMessage.Event):
     me = await client.get_me()
