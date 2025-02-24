@@ -101,11 +101,8 @@ async def anti_joy(event: events.NewMessage.Event):
 
 @client.on(events.NewMessage(chats=chats, pattern="/sex"))
 async def on_new_message(event: events.NewMessage.Event):
-    if event.message.reply_to_msg_id:
-        replied_to = await event.message.get_reply_message()
-        if replied_to.from_id:
-            await event.reply(f"جنده {replied_to.from_id}") 
-    ...
+    message_id = event.message.reply_to.reply_to_msg_id
+    await event.reply("id: " + str(message_id))
 
 
 async def main():
