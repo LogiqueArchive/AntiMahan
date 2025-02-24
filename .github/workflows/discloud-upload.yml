@@ -6,7 +6,7 @@ on:
       - 'main.py'
       - 'src/**'
       - 'requirements.txt'
-      
+  workflow_dispatch:
 
 jobs:
   build:
