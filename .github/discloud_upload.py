@@ -121,7 +121,7 @@ async def main():
     app_id: Optional[str] = getattr(app, "app_id", None)
     if app:
         logger.info("App %s found with id: %s", app.name, app.app_id)
-        logger.info("Commiting files to app: %s", app.name)
+        logger.info("Committing files to app: %s", app.name)
 
     else:
         logger.info("App doesn't exists")
