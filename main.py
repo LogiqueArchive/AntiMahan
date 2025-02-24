@@ -21,6 +21,7 @@ else:
 
 cache = {}
 anti_joy_enabled = False
+anti_photo_enabled = False
 
 
 async def add_member(group_id: int, user_id: int):
@@ -76,7 +77,7 @@ async def on_member_remove(event: events.ChatAction.Event):
         # return
 
 
-@client.on(events.NewMessage(pattern="/anti_joy"))
+@client.on(events.NewMessage(chats=chats, pattern="/anti_joy"))
 async def toggle_anti_joy(event: events.NewMessage.Event):
     me = await client.get_me()
     
@@ -100,9 +101,33 @@ async def toggle_anti_joy(event: events.NewMessage.Event):
     await event.respond(f"Anti joy is now {status}.")
     logger.info("Anti joy has been %s by %s", status, event.sender_id)
 
+@client.on(events.NewMessage(chats=chats, pattern="/anti_photo"))
+async def toggle_anti_photo(event: events.NewMessage.Event):
+    me = await client.get_me()
+    
+    if event.sender_id != me.id:
+        return
+    
+    if event.reply_to:
+        replied_message = await event.get_reply_message()
+        sender = await replied_message.get_sender()
+        sender_id = sender.id
+        if not cache.get(sender_id): cache[sender_id] = {}
+        cache[sender_id]["anti_photo"] = not cache[sender_id].get("anti_photo", False)
+        status = "enabled" if cache[sender_id]["anti_photo"] else "disabled"
+        await event.respond(f"Anti photo is now {status} for {sender.first_name}.")
+        logger.info("Anti photo has been %s for %s by %s", status, replied_message.sender_id, event.sender_id)
+        return
+
+    global anti_photo_enabled
+    anti_photo_enabled = not anti_photo_enabled
+    status = "enabled" if anti_photo_enabled else "disabled"
+    await event.respond(f"Anti photo is now {status}.")
+    logger.info("Anti photo has been %s by %s", status, event.sender_id)
+
 
 @client.on(events.NewMessage(chats=chats))
-async def anti_joy(event: events.NewMessage.Event):
+async def anti_handler(event: events.NewMessage.Event):
     if "😂" in event.text:
         if any((anti_joy_enabled, cache.get(event.sender_id, {}).get("anti_joy", False))):
             logger.info("Joy detected!")
@@ -111,7 +136,14 @@ async def anti_joy(event: events.NewMessage.Event):
                 logger.info("Joy deleted!")
             except Exception as err:
                 logger.error("Failed to delete joy: %s", err)
-
+    if event.photo:
+        if any((anti_photo_enabled, cache.get(event.sender_id, {}).get("anti_photo", False))):
+            logger.info("Photo detected!")
+            try:
+                await event.message.delete()
+                logger.info("Photo deleted!")
+            except Exception as err:
+                logger.error("Failed to delete photo: %s", err)
 
 @client.on(events.NewMessage(pattern="/sex"))
 async def on_new_message(event: events.NewMessage.Event):
