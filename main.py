@@ -83,7 +83,7 @@ async def toggle_anti_joy(event: events.NewMessage.Event):
     if event.sender_id != me.id:
         return
     
-    if event.replied_to:
+    if event.reply_to:
         replied_message = await event.get_reply_message()
         sender = await replied_message.get_sender()
         sender_id = sender.id
