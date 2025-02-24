@@ -129,6 +129,8 @@ async def main():
 
     await upload_app(zipfile_path, app_id)
 
+    logger.info("Upload successfull")
+
 
 if __name__ == "__main__":
     run(main())
