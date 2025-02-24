@@ -10,6 +10,9 @@ from telethon.functions import messages as msgs
 
 from src.utils import *
 
+
+logger = CustomLogger(__name__, log_to_file=True, log_file_path="logs/main.log")
+
 if settings.STRING_SESSION:
     client = TelegramClient(
         StringSession(settings.STRING_SESSION),
@@ -18,6 +21,8 @@ if settings.STRING_SESSION:
     )
 else:
     client = TelegramClient("bot", api_id=settings.API_ID, api_hash=settings.API_HASH)
+
+
 
 cache = {}
 anti_joy_enabled = False
