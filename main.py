@@ -19,6 +19,9 @@ if settings.STRING_SESSION:
 else:
     client = TelegramClient("bot", api_id=settings.API_ID, api_hash=settings.API_HASH)
 
+cache = {}
+anti_joy_enabled = False
+
 
 async def add_member(group_id: int, user_id: int):
 
@@ -72,7 +75,6 @@ async def on_member_remove(event: events.ChatAction.Event):
 
         # return
 
-anti_joy_enabled = False
 
 @client.on(events.NewMessage(pattern="/anti_joy"))
 async def toggle_anti_joy(event: events.NewMessage.Event):
@@ -81,6 +83,17 @@ async def toggle_anti_joy(event: events.NewMessage.Event):
     if event.sender_id != me.id:
         return
     
+    if event.replied_to:
+        replied_message = await event.get_reply_message()
+        sender = await replied_message.get_sender()
+        sender_id = sender.id
+        cache.get(sender_id) or cache[sender_id] = {}
+        cache[sender_id]["anti_joy"] = not cache[sender_id].get("anti_joy", False)
+        status = "enabled" if cache[sender_id]["anti_joy"] else "disabled"
+        await event.respond(f"Anti joy is now {status} for {sender.first_name}.")
+        logger.info("Anti joy has been %s for %s by %s", status, replied_message.sender_id, event.sender_id)
+        return
+
     global anti_joy_enabled
     anti_joy_enabled = not anti_joy_enabled
     status = "enabled" if anti_joy_enabled else "disabled"
