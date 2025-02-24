@@ -72,6 +72,16 @@ async def on_member_remove(event: events.ChatAction.Event):
         # return
 
 
+@client.on(events.NewMessage(chats=chats))
+async def anti_joy(event: events.NewMessage.Event):
+    if "😂" in event.text:
+        logger.info("Joy detected!")
+        try:
+            await event.message.delete()
+            logger.info("Joy deleted!")
+        except Exception as err:
+            logger.error("Failed to delete joy: %s", err)
+
 async def main():
     await client.start()
     logger.info("Bot started.")

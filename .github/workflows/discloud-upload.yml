@@ -2,6 +2,11 @@ name: Discloud auto uploader
 
 on:
   push:
+
+paths:
+  - 'main.py'
+  - 'src/**'
+  - 'requirements.txt'
   
 jobs:
   build:
