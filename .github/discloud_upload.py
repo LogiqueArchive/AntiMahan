@@ -71,10 +71,10 @@ def generate_zip_archive(source_path: Path, config_path: Path) -> Path:
     timestamp = dt.now().strftime("%Y%m%d_%H%M%S_%f")
     unique_id = uuid4().hex
     workdir_name = f"dsc_archive_{timestamp}_{unique_id}"
-    os.makedirs(workdir_name)
+    os.makedirs(workdir_name, exist_ok=True)
     workdir_path = Path(workdir_name)
     logger.info("Copying files to %s", workdir_name)
-    shutil.copytree(source_path, workdir_path)
+    shutil.copytree(source_path, workdir_path, dirs_exist_ok=True)
     logger.info("Copied files -> %s", workdir_path)
 
     shutil.copy2(config_path, workdir_path)
