@@ -6,6 +6,7 @@ from telethon.sync import TelegramClient
 from telethon.tl.functions.channels import InviteToChannelRequest
 from telethon.tl.functions.messages import GetDialogsRequest
 from telethon.tl.types import InputPeerChannel, InputPeerEmpty
+from telethon.functions import messages
 
 from src.utils import *
 
@@ -75,7 +76,6 @@ anti_joy_enabled = False
 
 @client.on(events.NewMessage(pattern="/anti_joy"))
 async def toggle_anti_joy(event: events.NewMessage.Event):
-    # دریافت شناسه کاربری خودت
     me = await client.get_me()
     
     if event.sender_id != me.id:
@@ -101,8 +101,18 @@ async def anti_joy(event: events.NewMessage.Event):
 
 @client.on(events.NewMessage(chats=chats, pattern="/sex"))
 async def on_new_message(event: events.NewMessage.Event):
-    message_id = event.message.reply_to.reply_to_msg_id
-    await event.reply("id: " + str(message_id))
+    me = await client.get_me()
+    
+    if event.sender_id != me.id:
+        return
+    
+    if event.message.reply_to:
+        message_id = event.message.reply_to.reply_to_msg_id
+        messages = await client(messages.GetMessagesRequest(id=[message_id]))
+        message = next(messages)
+        if message:
+            await event.reply("id: " + str(message.from_user.id))
+
 
 
 async def main():
