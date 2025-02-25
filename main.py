@@ -254,8 +254,11 @@ async def eval_handler(event):
         'asyncio': asyncio
     }
 
-    exec(compile(parsed, filename="<ast>", mode="exec"), env)
-    result = await eval(f"{fn_name}()", env)
+    try:
+        exec(compile(parsed, filename="<ast>", mode="exec"), env)
+        result = await eval(f"{fn_name}()", env)
+    except Exception as err:
+        await event.respond(f"Execution failed: {err}")
 
     if result is None:
         return await event.respond("✅ Code executed successfully.")
