@@ -252,7 +252,8 @@ async def eval_handler(event):
             'client': event.client,
             'event': event,
             '__import__': __import__,
-            'asyncio': asyncio
+            'asyncio': asyncio,
+            'os': os,
         }
 
         exec(compile(parsed, filename="<ast>", mode="exec"), env)
