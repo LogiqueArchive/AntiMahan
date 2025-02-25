@@ -208,7 +208,7 @@ async def send_logs(event: events.NewMessage.Event):
         return
 
     paste_url = await paste_files(files)
-    await event.reply(f"Logs: {paste_url}")
+    await event.reply(paste_url, link_preview=False)
 
 
 async def main():
