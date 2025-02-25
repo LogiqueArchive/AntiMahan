@@ -32,7 +32,7 @@ def read_discloud_app_name() -> str:
 
     config = ConfigParser()
     config.read_string(content)
-    return config.get("MAIN", {}).get("NAME", None)
+    return config["MAIN"]["NAME"]
 
 
 async def read_app_logs(app_id: str, api_token: str):
