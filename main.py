@@ -166,6 +166,11 @@ async def ping(event: events.NewMessage.Event):
 
 @client.on(events.NewMessage(pattern="/logs"))
 async def send_logs(event: events.NewMessage.Event):
+    me = await client.get_me()
+    
+    if event.sender_id != me.id:
+        return
+
     files = []
     if os.path.exists("discloud.config") and os.environ.get("DISCLOUD_TOKEN"):
         app_name = read_discloud_app_name()
