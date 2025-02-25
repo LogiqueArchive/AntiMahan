@@ -11,3 +11,4 @@ class Settings(BaseSettings):
     API_ID: int
     API_HASH: str
     STRING_SESSION: Optional[str] = None
+    DISCLOUD_TOKEN: Optional[str] = None

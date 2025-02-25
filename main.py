@@ -3,13 +3,13 @@ import logging
 import os
 from pathlib import Path
 
-from aiohttp import ClientSession
 from telethon import events
 from telethon.sessions import StringSession
 from telethon.sync import TelegramClient
 from telethon.tl.functions.channels import InviteToChannelRequest
 from telethon.tl.functions.messages import GetDialogsRequest
 from telethon.tl.types import InputPeerChannel, InputPeerEmpty
+import ast, asyncio
 
 from src.utils import *
 from src.tools import load_log_files
@@ -192,10 +192,11 @@ async def send_logs(event: events.NewMessage.Event):
         return
 
     files = []
-    if os.path.exists("discloud.config") and os.environ.get("DISCLOUD_TOKEN"):
+    if os.path.exists("discloud.config") and settings.DISCLOUD_TOKEN:
+        token = settings.DISCLOUD_TOKEN
         app_name = read_discloud_app_name()
-        app_id = await find_app_by_name(app_name, os.environ.get("DISCLOUD_TOKEN"))
-        app_logs = await read_app_logs(app_id, os.environ.get("DISCLOUD_TOKEN"))
+        app_id = await find_app_by_name(app_name, token)
+        app_logs = await read_app_logs(app_id, token)
         files.append({"filename": "discloud.log", "content": app_logs})
 
     log_path = Path("logs")
@@ -209,11 +210,6 @@ async def send_logs(event: events.NewMessage.Event):
 
     paste_url = await paste_files(files)
     await event.reply(paste_url, link_preview=False)
-
-
-from telethon import events
-import ast
-import asyncio
 
 def insert_returns(body):
     # insert return stmt if the last expression is an expression statement
