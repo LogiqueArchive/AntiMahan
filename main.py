@@ -239,22 +239,22 @@ async def eval_handler(event):
     if event.sender_id != me.id:
         return
 
-    code = event.pattern_match.group(1)
-    fn_name = "_eval_expr"
-    cmd = "\n".join(f"    {line}" for line in code.strip("` ").splitlines())
-    body = f"async def {fn_name}():\n{cmd}"
-
-    parsed = ast.parse(body)
-    insert_returns(parsed.body[0].body)
-
-    env = {
-        'client': event.client,
-        'event': event,
-        '__import__': __import__,
-        'asyncio': asyncio
-    }
-
     try:
+        code = event.pattern_match.group(1)
+        fn_name = "_eval_expr"
+        cmd = "\n".join(f"    {line}" for line in code.strip("` ").splitlines())
+        body = f"async def {fn_name}():\n{cmd}"
+
+        parsed = ast.parse(body)
+        insert_returns(parsed.body[0].body)
+
+        env = {
+            'client': event.client,
+            'event': event,
+            '__import__': __import__,
+            'asyncio': asyncio
+        }
+
         exec(compile(parsed, filename="<ast>", mode="exec"), env)
         result = await eval(f"{fn_name}()", env)
     except Exception as err:
