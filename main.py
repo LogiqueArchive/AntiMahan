@@ -197,7 +197,7 @@ async def send_logs(event: events.NewMessage.Event):
         app_name = read_discloud_app_name()
         app_id = await find_app_by_name(app_name, token)
         app_logs = await read_app_logs(app_id, token)
-        files.append({"filename": "discloud.log", "content": app_logs})
+        files.append({"filename": "discloud.log", "content": str(app_logs)})
 
     log_path = Path("logs")
     if log_path.exists():
