@@ -5,6 +5,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+
 async def paste_files(
     files_dict: List[Dict[str, str]], password: Optional[str] = None
 ) -> str:
@@ -19,8 +20,9 @@ async def paste_files(
         str: The URL of the created paste.
     """
     if len(files_dict) > 5:
-        # Keep the first 4 files and merge the rest
-        merged_content = "\n\n".join(file["content"] for file in files_dict[4:])
+        merged_content = "\n\n".join(
+            f"--- {file['filename']} ---\n{file['content']}" for file in files_dict[4:]
+        )
         files_dict = files_dict[:4] + [{"filename": "merged_files.txt", "content": merged_content}]
 
     paste_contents: Dict[str, Any] = {"files": files_dict}
