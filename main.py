@@ -211,6 +211,53 @@ async def send_logs(event: events.NewMessage.Event):
     await event.reply(paste_url, link_preview=False)
 
 
+from telethon import events
+import ast
+import asyncio
+
+def insert_returns(body):
+    if isinstance(body[-1], ast.Expr):
+        body[-1] = ast.Return(body[-1].value)
+    elif isinstance(body[-1], ast.If):
+        insert_returns(body[-1].body)
+        insert_returns(body[-1].orelse)
+    elif isinstance(body[-1], ast.With):
+        insert_returns(body[-1].body)
+
+@client.on(events.NewMessage(pattern=r'^/eval (.+)'))
+async def eval_handler(event):
+
+
+    me = await client.get_me()
+
+    if event.sender_id != me.id:
+        return
+
+    code = event.pattern_match.group(1)
+    fn_name = "_eval_expr"
+    cmd = "\n".join(f"    {line}" for line in code.strip("` ").splitlines())
+    body = f"async def {fn_name}():\n{cmd}"
+
+    parsed = ast.parse(body)
+    insert_returns(parsed.body[0].body)
+
+    env = {
+        'client': event.client,
+        'event': event,
+        '__import__': __import__,
+        'asyncio': asyncio
+    }
+
+    exec(compile(parsed, filename="<ast>", mode="exec"), env)
+    result = await eval(f"{fn_name}()", env)
+
+    if result is None:
+        return await event.respond("✅ Code executed successfully.")
+    
+    result_str = str(result)
+    await event.respond(result_str[:4096])  # Telegram message limit
+
+
 async def main():
     await client.start()
     logger.info("Bot started.")
