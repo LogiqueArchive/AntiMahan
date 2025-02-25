@@ -24,7 +24,9 @@ async def paste_files(
         paste_contents["password"] = password
 
     async with ClientSession() as session:
-        async with session.post("https://mystb.in/api/paste", json=paste_contents) as resp:
+        async with session.post(
+            "https://mystb.in/api/paste", json=paste_contents
+        ) as resp:
             if resp.status == 200:
                 paste_id: str = (await resp.json())["id"]
                 logger.debug("Paste created with ID: %s", paste_id)

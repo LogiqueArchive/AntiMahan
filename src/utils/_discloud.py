@@ -24,7 +24,8 @@ async def find_app_by_name(name: str, api_token: str) -> Optional[str]:
                 return None
 
             return app_id
-        
+
+
 def read_discloud_app_name() -> str:
     with open("discloud.config", "r") as fp:
         content = f"[MAIN]\n{fp.read()}"
@@ -33,10 +34,12 @@ def read_discloud_app_name() -> str:
     config.read_string(content)
     return config.get("MAIN", {}).get("NAME", None)
 
-async def read_app_logs(app_id: str, api_token: str): 
+
+async def read_app_logs(app_id: str, api_token: str):
     async with ClientSession() as session:
         async with session.get(
-            f"https://api.discloud.app/v2/app/{app_id}/logs", headers={"api-token": api_token}
+            f"https://api.discloud.app/v2/app/{app_id}/logs",
+            headers={"api-token": api_token},
         ) as resp:
             json_resp = await resp.json()
             big_logs = json_resp.get("apps", {}).get("terminal", {}).get("big", "")

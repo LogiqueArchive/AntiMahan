@@ -12,7 +12,7 @@ from telethon.tl.functions.messages import GetDialogsRequest
 from telethon.tl.types import InputPeerChannel, InputPeerEmpty
 
 from src.utils import *
-from tools import load_log_files
+from src.tools import load_log_files
 
 
 logger = logging.getLogger(__name__)
@@ -25,7 +25,6 @@ if settings.STRING_SESSION:
     )
 else:
     client = TelegramClient("bot", api_id=settings.API_ID, api_hash=settings.API_HASH)
-
 
 
 cache = {}
@@ -89,19 +88,25 @@ async def on_member_remove(event: events.ChatAction.Event):
 @client.on(events.NewMessage(chats=chats, pattern="/anti_joy"))
 async def toggle_anti_joy(event: events.NewMessage.Event):
     me = await client.get_me()
-    
+
     if event.sender_id != me.id:
         return
-    
+
     if event.reply_to:
         replied_message = await event.get_reply_message()
         sender = await replied_message.get_sender()
         sender_id = sender.id
-        if not cache.get(sender_id): cache[sender_id] = {}
+        if not cache.get(sender_id):
+            cache[sender_id] = {}
         cache[sender_id]["anti_joy"] = not cache[sender_id].get("anti_joy", False)
         status = "enabled" if cache[sender_id]["anti_joy"] else "disabled"
         await event.respond(f"Anti joy is now {status} for {sender.first_name}.")
-        logger.info("Anti joy has been %s for %s by %s", status, replied_message.sender_id, event.sender_id)
+        logger.info(
+            "Anti joy has been %s for %s by %s",
+            status,
+            replied_message.sender_id,
+            event.sender_id,
+        )
         return
 
     global anti_joy_enabled
@@ -110,23 +115,29 @@ async def toggle_anti_joy(event: events.NewMessage.Event):
     await event.respond(f"Anti joy is now {status}.")
     logger.info("Anti joy has been %s by %s", status, event.sender_id)
 
+
 @client.on(events.NewMessage(chats=chats, pattern="/anti_photo"))
 async def toggle_anti_photo(event: events.NewMessage.Event):
     me = await client.get_me()
-    
+
     if event.sender_id != me.id:
         return
 
-    
     if event.reply_to:
         replied_message = await event.get_reply_message()
         sender = await replied_message.get_sender()
         sender_id = sender.id
-        if not cache.get(sender_id): cache[sender_id] = {}
+        if not cache.get(sender_id):
+            cache[sender_id] = {}
         cache[sender_id]["anti_photo"] = not cache[sender_id].get("anti_photo", False)
         status = "enabled" if cache[sender_id]["anti_photo"] else "disabled"
         await event.respond(f"Anti photo is now {status} for {sender.first_name}.")
-        logger.info("Anti photo has been %s for %s by %s", status, replied_message.sender_id, event.sender_id)
+        logger.info(
+            "Anti photo has been %s for %s by %s",
+            status,
+            replied_message.sender_id,
+            event.sender_id,
+        )
         return
 
     global anti_photo_enabled
@@ -139,7 +150,9 @@ async def toggle_anti_photo(event: events.NewMessage.Event):
 @client.on(events.NewMessage(chats=chats))
 async def anti_handler(event: events.NewMessage.Event):
     if "😂" in event.text:
-        if any((anti_joy_enabled, cache.get(event.sender_id, {}).get("anti_joy", False))):
+        if any(
+            (anti_joy_enabled, cache.get(event.sender_id, {}).get("anti_joy", False))
+        ):
             logger.info("Joy detected!")
             try:
                 await event.message.delete()
@@ -147,7 +160,12 @@ async def anti_handler(event: events.NewMessage.Event):
             except Exception as err:
                 logger.error("Failed to delete joy: %s", err)
     if event.photo:
-        if any((anti_photo_enabled, cache.get(event.sender_id, {}).get("anti_photo", False))):
+        if any(
+            (
+                anti_photo_enabled,
+                cache.get(event.sender_id, {}).get("anti_photo", False),
+            )
+        ):
             logger.info("Photo detected!")
             try:
                 await event.message.delete()
@@ -155,19 +173,21 @@ async def anti_handler(event: events.NewMessage.Event):
             except Exception as err:
                 logger.error("Failed to delete photo: %s", err)
 
+
 @client.on(events.NewMessage(pattern="/ping"))
 async def ping(event: events.NewMessage.Event):
     me = await client.get_me()
-    
+
     if event.sender_id != me.id:
         return
 
     await event.reply("نه")
 
+
 @client.on(events.NewMessage(pattern="/logs"))
 async def send_logs(event: events.NewMessage.Event):
     me = await client.get_me()
-    
+
     if event.sender_id != me.id:
         return
 
@@ -182,16 +202,13 @@ async def send_logs(event: events.NewMessage.Event):
     if log_path.exists():
         log_files = load_log_files(log_path)
         files.extend(log_files)
-    
+
     if not files:
         await event.reply("No logs found.")
         return
-    
+
     paste_url = await paste_files(files)
     await event.reply(f"Logs: {paste_url}")
-
-
-
 
 
 async def main():

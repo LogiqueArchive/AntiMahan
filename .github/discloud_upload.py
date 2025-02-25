@@ -50,7 +50,6 @@ async def upload_app(
     zipfile_path: Path, app_id: Optional[str]
 ) -> discloud.discloud.Action:
 
-    
     discloud_file: discloud.File = discloud.File(zipfile_path.__fspath__())
     setattr(discloud_file, "filename", zipfile_path.name)
 

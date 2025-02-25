@@ -75,4 +75,20 @@ class CustomLogger(Logger):
                 handler.setLevel(level)
 
 
-setLoggerClass(lambda name: CustomLogger(name, level=INFO, log_to_file=True, log_file_path=f"logs/{name}.log"))
+setLoggerClass(
+    type(
+        "MyCustomLogger",
+        (CustomLogger,),
+        {
+            "__init__": lambda self, name: CustomLogger.__init__(
+                self,
+                name,
+                level=INFO,
+                backup_count=3,
+                max_log_size=1024 * 1024,
+                log_to_file=True,
+                log_file_path=f"logs/{name}.log",
+            )
+        },
+    )
+)

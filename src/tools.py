@@ -20,8 +20,8 @@ def load_log_files(log_dir: Path) -> List[Dict[str, str]]:
             with open(file, "r", encoding="utf-8") as fp:
                 logger.debug("Reading file: %s", file)
                 content: str = fp.read()
-
-            files.append({"filename": file.name, "content": content})
-            total_size += file_size
+            if content:
+                files.append({"filename": file.name, "content": content})
+                total_size += file_size
 
     return files
