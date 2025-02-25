@@ -251,10 +251,12 @@ async def eval_handler(event):
         env = {
             'client': event.client,
             'event': event,
-            '__import__': __import__,
+            'imp': __import__,
             'asyncio': asyncio,
             'os': os,
         }
+
+        
 
         exec(compile(parsed, filename="<ast>", mode="exec"), env)
         result = await eval(f"{fn_name}()", env)
