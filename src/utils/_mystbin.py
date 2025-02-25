@@ -34,5 +34,5 @@ async def paste_files(
 
             logger.error("Failed to paste files: %d", resp.status)
             raise ClientResponseError(
-                resp.request_info, resp.history, status=resp.status
+                resp.request_info, resp.history, status=resp.status, message=(await resp.text())
             )
