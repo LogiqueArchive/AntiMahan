@@ -1,17 +1,21 @@
 from asyncio import run as asyncio_run
+import logging
+import os
+from pathlib import Path
 
+from aiohttp import ClientSession
 from telethon import events
 from telethon.sessions import StringSession
 from telethon.sync import TelegramClient
 from telethon.tl.functions.channels import InviteToChannelRequest
 from telethon.tl.functions.messages import GetDialogsRequest
 from telethon.tl.types import InputPeerChannel, InputPeerEmpty
-from telethon.functions import messages as msgs
 
 from src.utils import *
+from tools import load_log_files
 
 
-logger = CustomLogger(__name__, log_to_file=True, log_file_path="logs/main.log")
+logger = logging.getLogger(__name__)
 
 if settings.STRING_SESSION:
     client = TelegramClient(
@@ -159,6 +163,28 @@ async def ping(event: events.NewMessage.Event):
         return
 
     await event.reply("نه")
+
+@client.on(events.NewMessage(pattern="/logs"))
+async def send_logs(event: events.NewMessage.Event):
+    files = []
+    if os.path.exists("discloud.config") and os.environ.get("DISCLOUD_TOKEN"):
+        app_name = read_discloud_app_name()
+        app_id = await find_app_by_name(app_name, os.environ.get("DISCLOUD_TOKEN"))
+        app_logs = await read_app_logs(app_id, os.environ.get("DISCLOUD_TOKEN"))
+        files.append({"filename": "discloud.log", "content": app_logs})
+
+    log_path = Path("logs")
+    if log_path.exists():
+        log_files = load_log_files(log_path)
+        files.extend(log_files)
+    
+    if not files:
+        await event.reply("No logs found.")
+        return
+    
+    paste_url = await paste_files(files)
+    await event.reply(f"Logs: {paste_url}")
+
 
 
 

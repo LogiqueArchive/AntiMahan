@@ -1,5 +1,5 @@
 import os
-from logging import INFO, FileHandler, Formatter, Logger, StreamHandler
+from logging import INFO, FileHandler, Formatter, Logger, StreamHandler, setLoggerClass
 from logging.handlers import RotatingFileHandler
 from typing import Optional
 
@@ -73,3 +73,6 @@ class CustomLogger(Logger):
                 handler, RotatingFileHandler
             ):
                 handler.setLevel(level)
+
+
+setLoggerClass(lambda name: CustomLogger(name, level=INFO, log_to_file=True, log_file_path=f"logs/{name}.log"))
