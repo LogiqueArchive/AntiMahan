@@ -18,21 +18,21 @@ async def paste_files(
     Returns:
         str: The URL of the created paste.
     """
+    if len(files_dict) > 5:
+        # Keep the first 4 files and merge the rest
+        merged_content = "\n\n".join(file["content"] for file in files_dict[4:])
+        files_dict = files_dict[:4] + [{"filename": "merged_files.txt", "content": merged_content}]
+
     paste_contents: Dict[str, Any] = {"files": files_dict}
     if password is not None:
-        logger.debug("Password provided, using it in paste")
         paste_contents["password"] = password
 
     async with ClientSession() as session:
-        async with session.post(
-            "https://mystb.in/api/paste", json=paste_contents
-        ) as resp:
+        async with session.post("https://mystb.in/api/paste", json=paste_contents) as resp:
             if resp.status == 200:
                 paste_id: str = (await resp.json())["id"]
-                logger.debug("Paste created with ID: %s", paste_id)
                 return f"https://mystb.in/{paste_id}"
 
-            logger.error("Failed to paste files: %d", resp.status)
             raise ClientResponseError(
                 resp.request_info, resp.history, status=resp.status, message=(await resp.text())
             )
