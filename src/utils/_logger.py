@@ -34,12 +34,24 @@ class CustomLogger(Logger):
         timezone = pytz.timezone("Asia/Tehran")
 
         # Custom formatter with timezone conversion
+        
         class TZFormatter(Formatter):
+            """override logging.Formatter to use an aware datetime object"""
             def converter(self, timestamp):
-                # Convert timestamp to Tehran time
-                dt = datetime.datetime.fromtimestamp(timestamp, tz=timezone)
-                return dt
-
+                dt = datetime.datetime.fromtimestamp(timestamp)
+                tzinfo = pytz.timezone('Asia/Tehran')
+                return tzinfo.localize(dt)
+                
+            def formatTime(self, record, datefmt=None):
+                dt = self.converter(record.created)
+                if datefmt:
+                    s = dt.strftime(datefmt)
+                else:
+                    try:
+                        s = dt.isoformat(timespec='milliseconds')
+                    except TypeError:
+                        s = dt.isoformat()
+                return s
         # Formatter for log messages
         formatter = TZFormatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
