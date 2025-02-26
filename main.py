@@ -10,7 +10,8 @@ from telethon.sessions import StringSession
 from telethon.sync import TelegramClient
 from telethon.tl.functions.channels import InviteToChannelRequest
 from telethon.tl.functions.messages import GetDialogsRequest
-from telethon.tl.types import InputPeerChannel, InputPeerEmpty
+from telethon.tl.types import InputPeerChannel, InputPeerEmpty, InputChatUploadedPhoto
+from telethon.tl.functions.messages import EditChatPhotoRequest
 
 from src.tools import load_log_files
 from src.utils import *
@@ -257,7 +258,7 @@ def insert_returns(body):
 
 @client.on(events.NewMessage())
 async def eval_handler(event):
-    if not event.text.startswith("/eval "):
+    if not event.text.startswith("/eval"):
         return
 
     me = await client.get_me()
@@ -292,6 +293,36 @@ async def eval_handler(event):
     else:
         result_str = str(result)
         await event.respond(result_str[:4096]) 
+
+
+@client.on(events.NewMessage(pattern="/setpic"))
+async def setpic(event: events.NewMessage.Event):
+    
+    msg = event.message
+    if event.replied_to:
+        msg = await event.get_reply_message()
+    
+    media_path = None
+    try:
+        # Download the media
+        media_path = await msg.download_media()
+        if not media_path:
+            await event.reply("Failed to download the photo.")
+            return
+
+        # Change the group photo
+        await client(EditChatPhotoRequest(
+            chat_id=event.chat_id,
+            photo=InputChatUploadedPhoto(file=await client.upload_file(media_path))
+        ))
+
+        await event.reply("✅ Group photo changed successfully.")
+    except Exception as e:
+        await event.reply(f"❌ Error while changing the photo: {e}")
+    finally:
+        # Safely remove the downloaded file
+        if media_path and os.path.exists(media_path):
+            os.remove(media_path)
 
 
 async def main():
