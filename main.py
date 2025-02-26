@@ -269,7 +269,7 @@ async def eval_handler(event):
         return
 
     try:
-        code = event.text[len("/eval "):]
+        code = event.text[len("/eval "):].strip()
         fn_name = "_eval_expr"
         cmd = "\n".join(f"    {line}" for line in code.strip("` ").splitlines())
         body = f"async def {fn_name}():\n{cmd}"
