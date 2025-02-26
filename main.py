@@ -299,7 +299,7 @@ async def eval_handler(event):
 async def setpic(event: events.NewMessage.Event):
     
     msg = event.message
-    if event.replied_to:
+    if event.reply_to:
         msg = await event.get_reply_message()
     
     media_path = None
