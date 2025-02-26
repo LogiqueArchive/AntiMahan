@@ -10,7 +10,7 @@ from telethon.sessions import StringSession
 from telethon.sync import TelegramClient
 from telethon.tl.functions.channels import InviteToChannelRequest
 from telethon.tl.functions.messages import GetDialogsRequest
-from telethon.tl.types import InputPeerChannel, InputPeerEmpty, InputChatUploadedPhoto
+from telethon.tl.types import InputPeerChannel, InputPeerEmpty, InputChatUploadedPhoto, TypeInputChatPhoto
 from telethon.tl.functions.messages import EditChatPhotoRequest
 
 from src.tools import load_log_files
@@ -297,6 +297,10 @@ async def eval_handler(event):
 
 @client.on(events.NewMessage(pattern="/setpic"))
 async def setpic(event: events.NewMessage.Event):
+    me = await client.get_me()
+
+    if event.sender_id != me.id:
+        return
     
     msg = event.message
     if event.reply_to:
@@ -313,7 +317,7 @@ async def setpic(event: events.NewMessage.Event):
         # Change the group photo
         await client(EditChatPhotoRequest(
             chat_id=event.chat_id,
-            photo=InputChatUploadedPhoto(file=await client.upload_file(media_path))
+            photo=TypeInputChatPhoto(file=await client.upload_file(media_path))
         ))
 
         await event.reply("✅ Group photo changed successfully.")
