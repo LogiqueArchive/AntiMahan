@@ -173,6 +173,9 @@ async def anti_handler(event: events.NewMessage.Event):
             except Exception as err:
                 logger.error("Failed to delete photo: %s", err)
 
+    if cache.get(event.sender_id, {}).get("muted"):
+        await event.message.delete()
+
 
 @client.on(events.NewMessage(pattern="/ping"))
 async def ping(event: events.NewMessage.Event):
@@ -183,6 +186,30 @@ async def ping(event: events.NewMessage.Event):
 
     await event.reply("نه")
 
+
+@client.on(events.NewMessage(pattern="/mute"))
+async def mute_cmd(event: events.NewMessage.Event):
+    me = await client.get_me()
+
+    if event.sender_id != me.id:
+        return
+
+    if event.reply_to:
+        replied_message = await event.get_reply_message()
+        sender = await replied_message.get_sender()
+        sender_id = sender.id
+        if not cache.get(sender_id):
+            cache[sender_id] = {}
+        cache[sender_id]["muted"] = not cache[sender_id].get("muted", False)
+        status = "muted" if cache[sender_id]["muted"] else "unmuted"
+        await event.respond(f"{sender.first_name} is now {status}.")
+        logger.info(
+            "%s is now %s by %s",
+            sender_id,
+            status,
+            event.sender_id,
+        )
+        return
 
 @client.on(events.NewMessage(pattern="/logs"))
 async def send_logs(event: events.NewMessage.Event):
