@@ -1,6 +1,7 @@
 from configparser import ConfigParser
-from aiohttp import ClientSession
 from typing import Optional, Tuple
+
+from aiohttp import ClientSession
 
 __all__: Tuple[str, ...] = (
     "find_app_by_name",

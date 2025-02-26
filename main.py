@@ -1,6 +1,8 @@
-from asyncio import run as asyncio_run
+import ast
+import asyncio
 import logging
 import os
+from asyncio import run as asyncio_run
 from pathlib import Path
 
 from telethon import events
@@ -9,11 +11,9 @@ from telethon.sync import TelegramClient
 from telethon.tl.functions.channels import InviteToChannelRequest
 from telethon.tl.functions.messages import GetDialogsRequest
 from telethon.tl.types import InputPeerChannel, InputPeerEmpty
-import ast, asyncio
 
-from src.utils import *
 from src.tools import load_log_files
-
+from src.utils import *
 
 logger = logging.getLogger(__name__)
 
@@ -211,6 +211,7 @@ async def send_logs(event: events.NewMessage.Event):
     paste_url = await paste_files(files)
     await event.reply(paste_url, link_preview=False)
 
+
 def insert_returns(body):
     # insert return stmt if the last expression is an expression statement
     if isinstance(body[-1], ast.Expr):
@@ -226,17 +227,18 @@ def insert_returns(body):
     if isinstance(body[-1], ast.With):
         insert_returns(body[-1].body)
 
-@client.on(events.NewMessage(pattern=r'^/eval (.+)'))
-async def eval_handler(event):
 
+@client.on(events.NewMessage())
+async def eval_handler(event):
+    if not event.text.startswith("/eval "):
+        return
 
     me = await client.get_me()
-
     if event.sender_id != me.id:
         return
 
     try:
-        code = event.pattern_match.group(1)
+        code = event.text[len("/eval "):]
         fn_name = "_eval_expr"
         cmd = "\n".join(f"    {line}" for line in code.strip("` ").splitlines())
         body = f"async def {fn_name}():\n{cmd}"
@@ -245,25 +247,24 @@ async def eval_handler(event):
         insert_returns(parsed.body[0].body)
 
         env = {
-            'client': event.client,
-            'event': event,
-            'imp': __import__,
-            'asyncio': asyncio,
-            'os': os,
+            "client": event.client,
+            "event": event,
+            "imp": __import__,
+            "asyncio": asyncio,
+            "os": os,
         }
-
-        
 
         exec(compile(parsed, filename="<ast>", mode="exec"), env)
         result = await eval(f"{fn_name}()", env)
     except Exception as err:
         await event.respond(f"Execution failed: {err}")
+        return
 
     if result is None:
-        return await event.respond("✅ Code executed successfully.")
-    
-    result_str = str(result)
-    await event.respond(result_str[:4096])  # Telegram message limit
+        await event.respond("✅ Code executed successfully.")
+    else:
+        result_str = str(result)
+        await event.respond(result_str[:4096]) 
 
 
 async def main():

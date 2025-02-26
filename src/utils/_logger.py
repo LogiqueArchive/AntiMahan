@@ -1,7 +1,10 @@
+import datetime
 import os
 from logging import INFO, FileHandler, Formatter, Logger, StreamHandler, setLoggerClass
 from logging.handlers import RotatingFileHandler
 from typing import Optional
+
+import pytz
 
 
 class CustomLogger(Logger):
@@ -28,9 +31,17 @@ class CustomLogger(Logger):
         """
 
         super().__init__(name, level)
+        timezone = pytz.timezone("Asia/Tehran")
+
+        # Custom formatter with timezone conversion
+        class TZFormatter(Formatter):
+            def converter(self, timestamp):
+                # Convert timestamp to Tehran time
+                dt = datetime.datetime.fromtimestamp(timestamp, tz=timezone)
+                return dt
 
         # Formatter for log messages
-        formatter = Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+        formatter = TZFormatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 
         # Console handler for standard output
         console_handler = StreamHandler()
