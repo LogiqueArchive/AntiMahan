@@ -1,6 +1,7 @@
 import datetime
 import os
-from logging import INFO, FileHandler, Formatter, Logger, StreamHandler, setLoggerClass
+from logging import (INFO, FileHandler, Formatter, Logger, StreamHandler,
+                     setLoggerClass)
 from logging.handlers import RotatingFileHandler
 from typing import Optional
 

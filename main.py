@@ -9,9 +9,10 @@ from telethon import events
 from telethon.sessions import StringSession
 from telethon.sync import TelegramClient
 from telethon.tl.functions.channels import InviteToChannelRequest
-from telethon.tl.functions.messages import GetDialogsRequest
-from telethon.tl.types import InputPeerChannel, InputPeerEmpty, InputChatUploadedPhoto, TypeInputChatPhoto
-from telethon.tl.functions.messages import EditChatPhotoRequest
+from telethon.tl.functions.messages import (EditChatPhotoRequest,
+                                            GetDialogsRequest)
+from telethon.tl.types import (InputPeerChannel, InputPeerEmpty,
+                               TypeInputChatPhoto)
 
 from src.tools import load_log_files
 from src.utils import *
