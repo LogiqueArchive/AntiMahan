@@ -12,7 +12,7 @@ from telethon.tl.functions.channels import InviteToChannelRequest
 from telethon.tl.functions.messages import (EditChatPhotoRequest,
                                             GetDialogsRequest)
 from telethon.tl.types import (InputPeerChannel, InputPeerEmpty,
-                               TypeInputChatPhoto)
+                               InputMediaUploadedDocument)
 
 from src.tools import load_log_files
 from src.utils import *
@@ -318,7 +318,7 @@ async def setpic(event: events.NewMessage.Event):
         # Change the group photo
         await client(EditChatPhotoRequest(
             chat_id=event.chat_id,
-            photo=TypeInputChatPhoto(file=await client.upload_file(media_path))
+            photo=InputMediaUploadedDocument(file=await client.upload_file(media_path))
         ))
 
         await event.reply("✅ Group photo changed successfully.")
