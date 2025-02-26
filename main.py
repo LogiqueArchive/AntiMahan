@@ -317,13 +317,10 @@ async def setpic(event: events.NewMessage.Event):
             await event.reply("Failed to download the photo.")
             return
 
-        uploaded_file = await client.upload_file(media_path)
-        input_photo = InputPhoto(id=0, access_hash=0)  # Using default values here for simplicity
-        input_photo.file = uploaded_file
         # Change the group photo
         await client(EditChatPhotoRequest(
             chat_id=event.chat_id,
-            photo=input_photo
+            photo=await client.upload_file(media_path)
         ))
 
         await event.reply("✅ Group photo changed successfully.")
