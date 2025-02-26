@@ -4,6 +4,7 @@ import logging
 import os
 from asyncio import run as asyncio_run
 from pathlib import Path
+from typing import Sequence
 
 from telethon import events
 from telethon.sessions import StringSession
@@ -12,7 +13,7 @@ from telethon.tl.functions.channels import InviteToChannelRequest
 from telethon.tl.functions.messages import (EditChatPhotoRequest,
                                             GetDialogsRequest)
 from telethon.tl.types import (InputPeerChannel, InputPeerEmpty,
-                               InputMediaUploadedDocument)
+                               InputMediaUploadedPhoto)
 
 from src.tools import load_log_files
 from src.utils import *
@@ -318,12 +319,47 @@ async def setpic(event: events.NewMessage.Event):
         # Change the group photo
         await client(EditChatPhotoRequest(
             chat_id=event.chat_id,
-            photo=InputMediaUploadedDocument(file=await client.upload_file(media_path))
+            photo=InputMediaUploadedPhoto(file=await client.upload_file(media_path))
         ))
 
         await event.reply("✅ Group photo changed successfully.")
     except Exception as e:
         await event.reply(f"❌ Error while changing the photo: {e}")
+    finally:
+        # Safely remove the downloaded file
+        if media_path and os.path.exists(media_path):
+            os.remove(media_path)
+
+
+@client.on(events.NewMessage(pattern="/dl"))
+async def dl(event: events.NewMessage.Event):
+    me = await client.get_me()
+
+    if event.sender_id != me.id:
+        return
+    
+    msg = event.message
+    if event.reply_to:
+        msg = await event.get_reply_message()
+    
+    media_path = None
+    try:
+        # Download the media
+        media_path = await msg.download_media()
+        if not media_path:
+            await event.reply("Failed to download the document.")
+            return
+
+        # Change the group photo
+        if isinstance(media_path, str):
+            await event.reply(file=media_path)
+        elif isinstance(media_path, Sequence):
+            for path in media_path:
+                await event.reply(file=path)
+
+
+    except Exception as e:
+        await event.reply(f"❌ Error while uploading media: {e}")
     finally:
         # Safely remove the downloaded file
         if media_path and os.path.exists(media_path):
