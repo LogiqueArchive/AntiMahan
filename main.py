@@ -9,7 +9,7 @@ from typing import Sequence
 from telethon import events
 from telethon.sessions import StringSession
 from telethon.sync import TelegramClient
-from telethon.tl.functions.channels import InviteToChannelRequest
+from telethon.tl.functions.channels import InviteToChannelRequest, 
 from telethon.tl.functions.messages import (EditChatPhotoRequest,
                                             GetDialogsRequest)
 from telethon.tl.types import (InputPeerChannel, InputPeerEmpty,
@@ -316,12 +316,20 @@ async def setpic(event: events.NewMessage.Event):
         if not media_path:
             await event.reply("Failed to download the photo.")
             return
+        await client(client(EditPhotoRequest(
+          channel=InputPeerChannel(
+            channel_id=event.chat_id,
+            access_hash=event.chat.access_hash
+          ),
+          photo=await client.upload_file(media_path)
+        )
 
         # Change the group photo
-        await client(EditChatPhotoRequest(
-            chat_id=event.chat_id,
-            photo=await client.upload_file(media_path)
-        ))
+       # await client(EditChatPhotoRequest(
+   #         chat_id=event.chat_id,
+      #      photo=await client.upload_file(media_path)
+#        ))
+      
 
         await event.reply("✅ Group photo changed successfully.")
     except Exception as e:
