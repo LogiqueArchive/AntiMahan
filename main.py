@@ -316,12 +316,12 @@ async def setpic(event: events.NewMessage.Event):
         if not media_path:
             await event.reply("Failed to download the photo.")
             return
-        await client(EditPhotoRequest(
-          channel=InputPeerChannel(
-            channel_id=event.chat_id,
-            access_hash=event.chat.access_hash
-          ),
-          photo=await client.upload_file(media_path)
+
+        # Change the group photo
+        await client(EditChatPhotoRequest(
+            
+            chat_id=event.chat_id,
+            photo=await client.upload_file(media_path)
         ))
 
         # Change the group photo
@@ -374,6 +374,12 @@ async def dl(event: events.NewMessage.Event):
         if media_path and os.path.exists(media_path):
             os.remove(media_path)
 
+@client.on(events.NewMessage(chats=-1002502304768, from_users=5210630997))
+async def anti_skill_issue(event: events.NewMessage):
+    
+    if "The link you sent is wrong." in event.message.message:
+        await event.message.delete()
+        
 
 async def main():
     await client.start()
