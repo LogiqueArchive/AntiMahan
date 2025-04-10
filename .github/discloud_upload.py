@@ -33,7 +33,7 @@ async def find_app_by_name(name: str) -> Optional[discloud.discloud.Application]
         ) as resp:
             json_resp = await resp.json()
             app_id = next(
-                (app["id"] for app in json_resp["apps"] if app["name"] == name),
+                (app["id"] for app in json_resp.get("apps") if app["name"] == name),
                 None,
             )
             if app_id is None:
